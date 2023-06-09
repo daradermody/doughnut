@@ -1,14 +1,13 @@
-import { AllMiddlewareArgs, BlockAction, SlackActionMiddlewareArgs } from '@slack/bolt'
-import { userIds } from '../userIds'
+import client from '../slackWebApi'
+import { kv } from '@vercel/kv'
 
-export default async function assembleGroups({ ack, client, context }: SlackActionMiddlewareArgs<BlockAction> & AllMiddlewareArgs) {
-  await ack();
-
+export default async function assembleGroups() {
+  const userIds = await kv.smembers('userIds')
   try {
     let users = await Promise.all(
       userIds
         .map(async id => {
-          const {user} = await client.users.info({token: context.botToken, user: id})
+          const {user} = await client.users.info({user: id})
           return user!
         })
     )
@@ -16,12 +15,16 @@ export default async function assembleGroups({ ack, client, context }: SlackActi
       .filter(user => !user.is_bot && !user.deleted)
       .sort(() => Math.random() - 0.5)
 
-    const groups = groupItems(users, 3).filter(group => group.length === 3)
-    for (const group of groups) {
+    const groups = groupItems(users, 3)
+    const ignoredGroups = groups.filter(group => group.length !== 3)
+    if (ignoredGroups.length) {
+      console.warn(`Ignoring this group as it doesn't have enough members: ${JSON.stringify(ignoredGroups[0].map(u => u.id))}`)
+    }
+    const filteredGroups = groups.filter(group => group.length === 3)
+    for (const group of filteredGroups) {
       const groupUserIds = group.map(user => user.id)
-      const {channel} = await client.conversations.open({token: context.botToken, users: groupUserIds.join(',')})
+      const {channel} = await client.conversations.open({users: groupUserIds.join(',')})
       await client.chat.postMessage({
-        token: context.botToken,
         channel: channel!.id!,
         blocks: [
           {
