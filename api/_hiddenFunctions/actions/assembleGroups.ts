@@ -1,6 +1,8 @@
 import client from '../slackWebApi'
 import { kv } from '@vercel/kv'
 
+const GROUP_SIZE = 2
+
 export default async function assembleGroups() {
   const userIds = await kv.smembers('userIds')
   try {
@@ -15,15 +17,19 @@ export default async function assembleGroups() {
       .filter(user => !user.is_bot && !user.deleted)
       .sort(() => Math.random() - 0.5)
 
-    const groups = groupItems(users, 3)
-    const ignoredGroups = groups.filter(group => group.length !== 3)
+    const groups = groupItems(users, GROUP_SIZE)
+    const ignoredGroups = groups.filter(group => group.length !== GROUP_SIZE)
     if (ignoredGroups.length) {
       console.warn(`Ignoring this group as it doesn't have enough members: ${JSON.stringify(ignoredGroups[0].map(u => u.id))}`)
     }
-    const filteredGroups = groups.filter(group => group.length === 3)
+    const filteredGroups = groups.filter(group => group.length === GROUP_SIZE)
     for (const group of filteredGroups) {
       const groupUserIds = group.map(user => user.id)
       const {channel} = await client.conversations.open({users: groupUserIds.join(',')})
+
+      const firstUsers = group.slice(0, -1)
+      const lastUser = group.at(-1)
+      const prefix = `${firstUsers.map(u => `<@${u.id}>`).join(', ')} and <@${lastUser!.id}>`
       await client.chat.postMessage({
         channel: channel!.id!,
         blocks: [
@@ -31,7 +37,7 @@ export default async function assembleGroups() {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `<@${group[0].id}>, <@${group[1].id}> and <@${group[2].id}>, you've been randomly grouped up so you can get to know each other! Schedule a 30 minute meeting when everyone's free.`
+              text: `${prefix}, you've been randomly grouped up so you can get to know each other! Schedule a 30 minute meeting when everyone's free.`
             }
           },
           {
