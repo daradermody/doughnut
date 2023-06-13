@@ -3,6 +3,7 @@ import validateSlackRequest from './_hiddenFunctions/validate'
 import { addUser, removeUser } from './_hiddenFunctions/actions/manageUsers'
 import renderHome from './_hiddenFunctions/views/home'
 import assembleGroups from './_hiddenFunctions/actions/assembleGroups'
+import waterCoolerTopic from './_hiddenFunctions/actions/waterCoolerTopic'
 
 export default async function events(req: VercelRequest, res: VercelResponse) {
   // if (req.method === "GET" && 'assemble' in req.query) {
@@ -29,6 +30,8 @@ export default async function events(req: VercelRequest, res: VercelResponse) {
     await renderHome(payload.user.id)
   } else if (actionId === 'assemble') {
     await assembleGroups()
+  } else if (actionId === 'water_cooler_topic') {
+    await waterCoolerTopic()
   }
   return res.status(200).end()
 }

@@ -79,9 +79,17 @@ function getAdminButtons(): Button[] {
       type: 'button',
       text: {
         type: 'plain_text',
-        text: 'Assemble people! (dev)'
+        text: 'Assemble groups'
       },
       action_id: 'assemble'
+    },
+    {
+      type: 'button',
+      text: {
+        type: 'plain_text',
+        text: 'Water cooler topic'
+      },
+      action_id: 'water_cooler_topic'
     }
   ]
 }

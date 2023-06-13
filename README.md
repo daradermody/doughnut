@@ -4,4 +4,4 @@
 </p>
 <h3 align="center">Like Donut? Like Doughnut!</h3>
 
-Doughnut is a crappy (but free) knock-off of the fantastic [Donut](https://www.donut.com/) app for Slack. It periodically creates small groups with random people so they can meet up, chat and get to know each other.
+Doughnut is a crappy (but free) knock-off of the fantastic [Donut](https://www.donut.com/) app for Slack. It periodically creates small groups with random people so they can meet up, chat and get to know each other, as well as post water cooler topics to stir conversations.
