@@ -1,7 +1,7 @@
 import client from '../slackWebApi'
 import { kv } from '@vercel/kv'
 
-const GROUP_SIZE = 2
+const GROUP_SIZE = 3
 
 export default async function assembleGroups() {
   const userIds = await kv.smembers('userIds')
