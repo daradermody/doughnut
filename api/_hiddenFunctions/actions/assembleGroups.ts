@@ -17,11 +17,13 @@ export default async function assembleGroups() {
       .filter(user => !user.is_bot && !user.deleted)
       .sort(() => Math.random() - 0.5)
 
-    const groups = groupItems(users, GROUP_SIZE)
-    const ignoredGroups = groups.filter(group => group.length !== GROUP_SIZE)
-    if (ignoredGroups.length) {
-      console.warn(`Ignoring this group as it doesn't have enough members: ${JSON.stringify(ignoredGroups[0].map(u => u.id))}`)
+    const [groups, remainder] = groupItems(users, GROUP_SIZE)
+    for (const [index, user] of remainder.entries()) {
+      if (groups[index]) {
+        groups[index].push(user)
+      }
     }
+
     const filteredGroups = groups.filter(group => group.length === GROUP_SIZE)
     for (const group of filteredGroups) {
       const groupUserIds = group.map(user => user.id)
@@ -62,10 +64,18 @@ export default async function assembleGroups() {
   }
 }
 
-function groupItems<T>(items: T[], size: number): T[][] {
+function groupItems<T>(items: T[], size: number): [T[][], T[]] {
+  if (items.length === 0) {
+    return [[], []]
+  }
+
   const groups = []
   for (let i = 0; i < items.length; i += size) {
     groups.push(items.slice(i, i + size));
   }
-  return groups
+  if (groups.at(-1)!.length !== size) {
+    return [groups.slice(0, -1), groups.at(-1)!]
+  } else {
+    return [groups, []]
+  }
 }
