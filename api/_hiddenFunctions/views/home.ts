@@ -1,4 +1,4 @@
-import { Button } from '@slack/types'
+import { Button, KnownBlock } from '@slack/types'
 import client from '../slackWebApi'
 import { kv } from '@vercel/kv'
 import { ActionsBlock } from '@slack/web-api'
@@ -16,18 +16,18 @@ export default async function renderHome(userId: string) {
       callback_id: 'home_view',
       blocks: [
         {
-          type: 'section',
+          type: 'header',
           text: {
-            type: 'mrkdwn',
-            text: '*Time to get to know your colleagues!* :tada:'
+            type: 'plain_text',
+            text: 'Time to get to know your colleagues! :tada:',
+            emoji: true
           }
         },
-        {type: 'divider'},
         {
           type: 'section',
           text: {
-            type: 'mrkdwn',
-            text: 'Every week you\'ll be grouped with two other random Siren people in a private chat where you can arrange a 30 minute call for some banter.'
+            type: 'plain_text',
+            text: "Every week you'll be grouped with two other random Siren people in a private chat where you can arrange a 30 minute call for some banter."
           }
         },
         {
@@ -36,13 +36,7 @@ export default async function renderHome(userId: string) {
             await getOptInOrOutButton(userId),
           ]
         } as ActionsBlock,
-        ...(ADMIN_IDS.includes(userId) ? [
-          {type: 'divider'},
-          {
-            type: 'actions',
-            elements: getAdminButtons()
-          } as ActionsBlock
-        ] : [])
+        ...(ADMIN_IDS.includes(userId) ? getAdminBlocks() : [])
       ]
     }
   })
@@ -56,7 +50,7 @@ async function getOptInOrOutButton(userId: string): Promise<Button> {
       style: 'danger',
       text: {
         type: 'plain_text',
-        text: 'Opt out!'
+        text: 'Opt out'
       },
       action_id: 'remove_user'
     }
@@ -66,30 +60,52 @@ async function getOptInOrOutButton(userId: string): Promise<Button> {
       style: 'primary',
       text: {
         type: 'plain_text',
-        text: 'Count me in!!'
+        text: 'Count me in!'
       },
       action_id: 'add_user'
     }
   }
 }
 
-function getAdminButtons(): Button[] {
+function getAdminBlocks(): KnownBlock[] {
   return [
+    {type: 'divider'},
     {
-      type: 'button',
+      type: "header",
       text: {
-        type: 'plain_text',
-        text: 'Assemble groups'
-      },
-      action_id: 'assemble'
+        type: "plain_text",
+        text: "Admin"
+      }
     },
     {
-      type: 'button',
-      text: {
-        type: 'plain_text',
-        text: 'Water cooler topic'
-      },
-      action_id: 'water_cooler_topic'
+      type: 'actions',
+      elements: [
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: 'Assemble groups'
+          },
+          action_id: 'assemble'
+        },
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: 'Water cooler topic'
+          },
+          action_id: 'water_cooler_topic'
+        }
+      ]
+    } as ActionsBlock,
+    {
+      type: 'context',
+      elements: [
+        {
+          type: 'plain_text',
+          text: `Version: ${process.env.VERCEL_GIT_COMMIT_SHA}`
+        }
+      ]
     }
   ]
 }
