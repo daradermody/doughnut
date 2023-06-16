@@ -39,7 +39,7 @@ export default async function assembleGroups() {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `${prefix}, you've been randomly grouped up so you can get to know each other! Schedule a 30 minute meeting when everyone's free.`
+              text: `${prefix}, you've been randomly grouped up so you can get to know each other! Schedule a 15 minute meeting when everyone's free.`
             }
           },
           {

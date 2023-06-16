@@ -27,7 +27,7 @@ export default async function renderHome(userId: string) {
           type: 'section',
           text: {
             type: 'plain_text',
-            text: "Every week you'll be grouped with two other random Siren people in a private chat where you can arrange a 30 minute call for some banter."
+            text: "Every few weeks you'll be grouped with two other random Siren people in a private chat where you can arrange a 15 minute call for some banter."
           }
         },
         {
