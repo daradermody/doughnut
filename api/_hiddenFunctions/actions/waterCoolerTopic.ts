@@ -15,7 +15,7 @@ export default async function waterCoolerTopic() {
         type: 'section',
         text: {
           type: 'plain_text',
-          text: `Time for a water cooler topic!`
+          text: 'Time for a water cooler topic!'
         }
       },
       {
@@ -25,15 +25,16 @@ export default async function waterCoolerTopic() {
           text: `> ${topics[nextTopicIndex]}`
         }
       }
-    ]
+    ],
+    text: `Time for a water cooler topic: ${topics[nextTopicIndex]}`
   })
   await kv.incr('nextTopicIndex');
 }
 
 const topics = [
+  `What's a hobby or activity you've recently picked up? :dancer:`,
   `Have you found any new TV shows or films lately that you loved? :movie_camera:`,
   `What's your favourite form of potato? :potato:`,
-  `What's a hobby or activity you've recently picked up? :dancer:`,
   `What's the most beautiful place you've ever been? :beach_with_umbrella:`,
   `What music have you been listening to these days? :saxophone:`,
   `'Share the most fun or exciting thing you've done recently' in your free time. Bonus: post a pic! :parachute:`,
